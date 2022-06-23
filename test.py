@@ -3,6 +3,8 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import cv2
 from keras.models import load_model
+from controller import doorAutomate
+
 facedetect = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 threshold=0.90
 cap=cv2.VideoCapture(0)
@@ -39,14 +41,17 @@ while True:
 		# cv2.putText(imgOrignal, "Class" , (20,35), font, 0.75, (0,0,255),2, cv2.LINE_AA)
 		# cv2.putText(imgOrignal, "Probability" , (20,75), font, 0.75, (255,0,255),2, cv2.LINE_AA)
 		prediction=model.predict(img)
-		classIndex=model.predict_classes(img)
+		# classIndex=model.predict_classes(img)
+		classIndex=np.argmax(prediction,axis=1)
 		probabilityValue=np.amax(prediction)
 		if probabilityValue>threshold:
 			if classIndex==0:
+				doorAutomate(0)
 				cv2.rectangle(imgOrignal,(x,y),(x+w,y+h),(0,255,0),2)
 				cv2.rectangle(imgOrignal, (x,y-40),(x+w, y), (0,255,0),-2)
 				cv2.putText(imgOrignal, str(get_className(classIndex)),(x,y-10), font, 0.75, (255,255,255),1, cv2.LINE_AA)
 			elif classIndex==1:
+				doorAutomate(1)
 				cv2.rectangle(imgOrignal,(x,y),(x+w,y+h),(50,50,255),2)
 				cv2.rectangle(imgOrignal, (x,y-40),(x+w, y), (50,50,255),-2)
 				cv2.putText(imgOrignal, str(get_className(classIndex)),(x,y-10), font, 0.75, (255,255,255),1, cv2.LINE_AA)
